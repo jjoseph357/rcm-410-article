@@ -1236,6 +1236,147 @@
             this.page.title = 'Separating ‘Artificial’ from ‘Intelligence’: Charting a Responsible Course for AI in Canadian Education';
         }</script>
     <script async="" src="https://can-geo-magazine.disqus.com/embed.js"></script>
+
+    <!-- Custom Lightbox -->
+    <style>
+        /* Hide the original template's broken PhotoSwipe lightbox */
+        .pswp {
+            display: none !important;
+        }
+
+        .custom-lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 999999;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .custom-lightbox.is-visible {
+            display: flex;
+            opacity: 1;
+        }
+        .custom-lightbox__img {
+            max-width: 90vw;
+            max-height: 78vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+            animation: lightboxZoomIn 0.3s ease forwards;
+        }
+        .custom-lightbox__caption {
+            color: #ccc;
+            font-size: 0.95rem;
+            max-width: 700px;
+            text-align: center;
+            margin-top: 1.2rem;
+            line-height: 1.5;
+            font-style: italic;
+            animation: lightboxFadeUp 0.4s ease 0.15s both;
+        }
+        .custom-lightbox__close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.5rem;
+            color: #fff;
+            font-size: 2.2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: 300;
+            line-height: 1;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .custom-lightbox__close:hover { opacity: 1; }
+        @keyframes lightboxZoomIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes lightboxFadeUp {
+            from { transform: translateY(12px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+    <div class="custom-lightbox" id="customLightbox">
+        <button class="custom-lightbox__close" aria-label="Close lightbox">&times;</button>
+        <img class="custom-lightbox__img" id="lightboxImg" src="" alt="" />
+        <p class="custom-lightbox__caption" id="lightboxCaption"></p>
+    </div>
+    <script>
+        (function () {
+            var overlay = document.getElementById('customLightbox');
+            var lbImg = document.getElementById('lightboxImg');
+            var lbCap = document.getElementById('lightboxCaption');
+
+            function openLightbox(imgSrc, caption) {
+                lbImg.src = imgSrc;
+                lbCap.textContent = caption || '';
+                overlay.classList.add('is-visible');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                overlay.classList.remove('is-visible');
+                document.body.style.overflow = '';
+            }
+
+            // Intercept clicks on the document in the CAPTURE phase.
+            // This ensures our code runs before the remote scripts' event listeners.
+            document.addEventListener('click', function(e) {
+                var imgTarget = e.target.closest('.js-expand-img');
+                var svgTarget = e.target.closest('.c-expand-img-button');
+                
+                if (imgTarget || svgTarget) {
+                    // Stop the original site's scripts from seeing this click at all
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    var targetElt = imgTarget || svgTarget;
+                    var figure = targetElt.closest('.js-image-figure') || targetElt.closest('figure');
+                    var caption = '';
+                    var imgSrc = imgTarget ? imgTarget.src : '';
+                    
+                    if (!imgSrc && figure) {
+                        var img = figure.querySelector('.js-expand-img');
+                        if (img) imgSrc = img.src;
+                    }
+                    
+                    if (figure) {
+                        var cap = figure.querySelector('.js-image-caption, figcaption');
+                        if (cap) caption = cap.textContent.trim();
+                    }
+                    
+                    if (imgSrc) {
+                        openLightbox(imgSrc, caption);
+                    }
+                }
+            }, true); // true = capture phase
+
+            // Close on overlay click
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay || e.target.classList.contains('custom-lightbox__close')) {
+                    closeLightbox();
+                }
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeLightbox();
+            });
+        })();
+    </script>
 </body>
 
 </html>
